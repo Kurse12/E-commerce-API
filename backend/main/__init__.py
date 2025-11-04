@@ -32,6 +32,8 @@ def create_app():
     import main.resources as resources
     api.add_resource(resources.ClientesResource, '/clientes')
     api.add_resource(resources.ClienteResource, '/cliente/<id>')
+    api.add_resource(resources.UsuariosResource, '/usuarios')
+    api.add_resource(resources.UsuarioResource, '/usuario/<id>')
     
     api.init_app(app)
     
