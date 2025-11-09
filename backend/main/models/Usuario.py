@@ -9,7 +9,10 @@ class Usuario(db.Model):
     email = db.Column(db.String(60), nullable=False, unique=True, index=True)
     rol = db.Column(db.String(45), nullable=False, default="cliente")
     telefono = db.Column(db.Integer, nullable=False)
-    fecha_registro = db.Column(db.DateTime, default=dt.datetime.now(), nullable=False)
+    fecha_registro = db.Column(db.DateTime, default=dt.datetime.now, nullable=False)
+    compras = db.relationship('Compra', back_populates="usuario", cascade="all, delete", passive_deletes=True)
+
+
     
     def __repr__(self):
         return f'{self.id},{self.nombre}, {self.apellido}, {self.rol}, {self.telefono},{self.fecha_registro}'

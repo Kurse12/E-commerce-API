@@ -34,6 +34,12 @@ def create_app():
     api.add_resource(resources.ClienteResource, '/cliente/<id>')
     api.add_resource(resources.UsuariosResource, '/usuarios')
     api.add_resource(resources.UsuarioResource, '/usuario/<id>')
+    api.add_resource(resources.ComprasResource, '/compras')
+    api.add_resource(resources.CompraResource, '/compra/<id>')
+    api.add_resource(resources.ProductosResource, '/productos')
+    api.add_resource(resources.ProductoResource, '/producto/<id>')
+    api.add_resource(resources.ProductosComprasResource, '/productos-compras')
+    api.add_resource(resources.ProductoCompraResource, '/producto-compra/<id>')
     
     api.init_app(app)
     
