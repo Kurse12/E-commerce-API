@@ -1,9 +1,12 @@
+from tabnanny import check
 from .. import db
 import datetime as dt
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    password = db.Column(db.String(100), nullable=False)
     nombre = db.Column(db.String(45), nullable=False)
     apellido = db.Column(db.String(60), nullable=False)
     email = db.Column(db.String(60), nullable=False, unique=True, index=True)
@@ -11,9 +14,19 @@ class Usuario(db.Model):
     telefono = db.Column(db.Integer, nullable=False)
     fecha_registro = db.Column(db.DateTime, default=dt.datetime.now, nullable=False)
     compras = db.relationship('Compra', back_populates="usuario", cascade="all, delete", passive_deletes=True)
-
-
     
+    @property
+    def plain_password(self):
+        raise AttributeError('Password can\'t be read')
+    
+    
+    @plain_password.setter
+    def plain_password(self, password):
+        self.password = generate_password_hash(password)
+        
+    def validate_pass(self, password):
+        return check_password_hash(self.password, password)
+
     def __repr__(self):
         return f'{self.id},{self.nombre}, {self.apellido}, {self.rol}, {self.telefono},{self.fecha_registro}'
     
@@ -37,6 +50,7 @@ class Usuario(db.Model):
         email = usuario_json.get('email')
         rol =  usuario_json.get('rol')
         telefono = usuario_json.get('telefono')
+        password = usuario_json.get('password')
         fecha_registro = usuario_json.get('fecha_registro')
         
         return Usuario(
@@ -46,5 +60,6 @@ class Usuario(db.Model):
             email = email,
             rol = rol,
             telefono = telefono,
+            plain_password = password,
             fecha_registro = fecha_registro
         )
