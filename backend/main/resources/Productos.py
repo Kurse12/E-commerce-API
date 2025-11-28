@@ -36,13 +36,24 @@ class Producto(Resource):
             return '', 404
 
 class Productos(Resource):
-    #trae todos los productos
+    #trae todos los productos paginados
     def get(self):
-        productos = db.session.query(ProductoModel).all()
+        page = request.args.get("page", 1, type=int)
+        per_page = request.args.get("per_page", 5, type=int)
+
         
+        productos = ProductoModel.query.paginate(
+            page=page,
+            per_page=per_page
+        )
+
         return jsonify({
-            'productos': [producto.to_json() for producto in productos]
-        })
+        "productos": [p.to_json() for p in productos.items],
+        "total": productos.total,
+        "pages": productos.pages,
+        "page": productos.page
+    })
+        
         
         
     #agrega un producto

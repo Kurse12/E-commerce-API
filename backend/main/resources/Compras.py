@@ -27,11 +27,22 @@ class Compra(Resource):
             return '', 404
 
 class Compras(Resource):
-    #busca TODAS las compras devuelve una lista de json de cada una
     def get(self):
-        compras = db.session.query(CompraModel).all()
+    #busca TODAS las compras devuelve una lista de json de cada una
+        page = request.args.get("page",1,type=int)
+        per_page = request.args.get("per_page",5,type=int)
+    
+        # Query
+        compras = CompraModel.query.paginate(
+        page=page,
+        per_page=per_page
+        )
+
         return jsonify({
-            'compras': [compra.to_json() for compra in compras]
+        "compras": [p.to_json() for p in compras.items],
+        "total": compras.total,
+        "pages": compras.pages,
+        "page": compras.page
         })
         
     #crea una compra

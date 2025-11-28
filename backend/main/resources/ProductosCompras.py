@@ -5,22 +5,21 @@ from main.models import ProductoCompraModel
 
 class ProductosCompras(Resource):
     def get(self):
-        page = 1
-        per_page = 5
-        productoscompras = db.session.query(ProductoCompraModel)
-        if request.get_json():
-            filters = request.get_json().items()
-            for key, value in filters:
-                if key == 'page':
-                    page = int(value)
-                elif key == 'per_page':
-                    per_page = int(value)
-        productoscompras = productoscompras.paginate(page, per_page, True, 10)
+    #busca TODAS las productoscompras devuelve una lista de json de cada una
+        page = request.args.get("page",1,type=int)
+        per_page = request.args.get("per_page",5,type=int)
+    
+        # Query
+        productoscompras = ProductoCompraModel.query.paginate(
+        page=page,
+        per_page=per_page
+        )
+
         return jsonify({
-            'productoscompras': [productocompra.to_json() for productocompra in productoscompras.items],
-            'total': productoscompras.total,
-            'pages': productoscompras.pages,
-            'page': page
+        "productoscompras": [p.to_json() for p in productoscompras.items],
+        "total": productoscompras.total,
+        "pages": productoscompras.pages,
+        "page": productoscompras.page
         })
 
     def post(self):

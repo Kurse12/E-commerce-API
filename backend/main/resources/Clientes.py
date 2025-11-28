@@ -19,9 +19,21 @@ clientes = [
 class Clientes(Resource):
     
     def get(self):
-        clientes = db.session.query(UsuarioModel).filter(UsuarioModel.role == 'cliente').all()
+    #busca TODAS las clientes devuelve una lista de json de cada una
+        page = request.args.get("page",1,type=int)
+        per_page = request.args.get("per_page",5,type=int)
+    
+        # Query
+        clientes = UsuarioModel.query.paginate(
+        page=page,
+        per_page=per_page
+        )
+
         return jsonify({
-            'clientes': [clientes.to_json() for cliente in clientes]
+        "clientes": [p.to_json() for p in clientes.items],
+        "total": clientes.total,
+        "pages": clientes.pages,
+        "page": clientes.page
         })
         
     def post(self):
