@@ -22,10 +22,11 @@ class Usuario(db.Model):
     
     @plain_password.setter
     def plain_password(self, password):
+        password = str(password)
         self.password = generate_password_hash(password)
         
     def validate_pass(self, password):
-        return check_password_hash(self.password, password)
+        return check_password_hash(self.password, str(password))
 
     def __repr__(self):
         return f'{self.id},{self.nombre}, {self.apellido}, {self.rol}, {self.telefono},{self.fecha_registro}'
