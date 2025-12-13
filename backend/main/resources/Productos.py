@@ -3,6 +3,7 @@ from flask_restful import Resource
 from flask import request, jsonify
 from .. import  db
 from main.models import ProductoModel
+from main.auth.decorators import role_required
 
 class Producto(Resource):
     #busca el producto por id, si existe devuelve el json
@@ -14,6 +15,7 @@ class Producto(Resource):
             return 'Recurso no encontrado', 404
         
     # busca el producto por id, lee el json y actualiza cada atributo del modelo
+    @role_required(roles=['admin']) 
     def put(self,id):
         producto = db.session.query(ProductoModel).get_or_404(id)
         data = request.get_json().items()
@@ -57,6 +59,7 @@ class Productos(Resource):
         
         
     #agrega un producto
+    @role_required(roles=['admin']) 
     def post(self):
         producto = ProductoModel.from_json(request.get_json())
         db.session.add(producto)

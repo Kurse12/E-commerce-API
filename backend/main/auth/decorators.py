@@ -10,7 +10,7 @@ def role_required(roles):
             claims = get_jwt()
             #verifico que el rol sea el permitido
             
-            if claims['rol'] in roles:
+            if claims['sub']['rol'] in roles:
                 return function(*args, **kwargs)
             else:
                 return 'Rol not allowed', 403

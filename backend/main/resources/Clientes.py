@@ -2,6 +2,8 @@ from flask_restful import Resource
 from flask import jsonify, request
 from .. import db
 from main.models import UsuarioModel
+from main.auth.decorators import role_required
+from flask_jwt_extended import get_jwt_identity
 
 clientes = [
     {
@@ -17,7 +19,7 @@ clientes = [
 ]
 
 class Clientes(Resource):
-    
+    @role_required(roles=["admin"])
     def get(self):
     #busca TODAS las clientes devuelve una lista de json de cada una
         page = request.args.get("page",1,type=int)
@@ -36,6 +38,7 @@ class Clientes(Resource):
         "page": clientes.page
         })
         
+  
     def post(self):
         cliente = UsuarioModel.from_json(request.get_json())
         cliente.role = 'cliente'
@@ -45,12 +48,20 @@ class Clientes(Resource):
         
         
 class Cliente(Resource):
+    
+    @role_required(roles=["admin", "cliente"])
     def get(self, id):
         cliente = db.session.query(UsuarioModel).get_or_404(id)
+        current_user = get_jwt_identity()
         if cliente.role == 'cliente':
-            return cliente.to_json()
+            if current_user['usuarioId'] == cliente.id or current_user['rol'] == 'admin':
+                
+                return cliente.to_json()
+            else:
+                return 'Unauthorized', 401
         else:
             return '', 404
+        
         
     def delete(self, id):
         cliente = db.session.query(UsuarioModel).get_or_404(id)
