@@ -5,3 +5,7 @@ __pycache__/
 *.log
 *.sqlite3
 *.db
+pyvenv.cfg
+/Include
+/Lib
+/Scripts
